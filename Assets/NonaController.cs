@@ -16,6 +16,8 @@ public class NonaController : MonoBehaviour
     public AudioSource Audio;
 
     public AudioClip GunSound;
+    public AudioClip ReloadSound;
+    public AudioClip EmptyGunSound;
     public GameObject BulletTrail;
 
     public Transform LeftGunShotOrigin;
@@ -39,7 +41,7 @@ public class NonaController : MonoBehaviour
 
     private float jumpVelocityOnFire;
 
-    public UnityEngine.UI.Text ShotsFiredDisplay;
+    public BulletMeter BulletDisplay;
 
     public void Awake()
     {
@@ -87,23 +89,30 @@ public class NonaController : MonoBehaviour
 
         if (shotsFired < 18)
         {
+            Vector3 facingDirection = (facingRight ? Vector3.right : Vector3.left);
             if (Input.GetButton("Fire1") && !lastFiredLeft && cooldownTimer <= 0)
             {
                 Animator.SetTrigger("Left Gun Fire");
-                FireGun(LeftGunShotOrigin.position, transform.TransformDirection(Vector3.right));
+                this.StartCoroutine(FireGun(LeftGunShotOrigin, transform.TransformDirection(facingDirection)));
                 lastFiredLeft = true;
 
             }
             else if (!Input.GetButton("Fire1") && lastFiredLeft && cooldownTimer <= 0)
             {
                 Animator.SetTrigger("Right Gun Fire");
-                FireGun(RightGunShotOrigin.position, transform.TransformDirection(Vector3.right));
+                this.StartCoroutine(FireGun(RightGunShotOrigin, transform.TransformDirection(facingDirection)));
                 lastFiredLeft = false;
             }
         }
         else if (onGround && reloadTimer <= 0)
         {
             reloadTimer = ReloadTime;
+            BulletDisplay.StartReload(18, ReloadTime);
+            Audio.PlayOneShot(ReloadSound);
+        }
+        else if (reloadTimer <= 0 && Input.GetButtonDown("Fire1") || Input.GetButtonUp("Fire1"))
+        {
+            //Audio.PlayOneShot(EmptyGunSound);
         }
 
         if (reloadTimer > 0 && onGround)
@@ -136,22 +145,20 @@ public class NonaController : MonoBehaviour
 
         Animator.SetFloat("Horizontal Speed", horizontalAxis);
 
-        if (reloadTimer > 0)
+        if (reloadTimer <= 0)
         {
-            ShotsFiredDisplay.text = string.Format("Reloading... {0:0.0}s", reloadTimer);
-        }
-        else
-        {
-            ShotsFiredDisplay.text = string.Format("Bullets: {0}", 18 - shotsFired);
+            BulletDisplay.SetBulletCount(18 - shotsFired, 18);
         }
     }
 
     private int shotsFired;
 
-    private void FireGun(Vector3 position, Vector3 direction)
+    private IEnumerator FireGun(Transform origin, Vector3 direction)
     {
         cooldownTimer = ShotCooldown;
         gunSlowdownTimer = GunSlowdownTime;
+        yield return new WaitForSeconds(0.01f);
+        Vector3 position = origin.position;
         shotsFired++;
         if (!onGround)
         {
@@ -176,7 +183,7 @@ public class NonaController : MonoBehaviour
             {
                 s.TakeShot(hit, this);
                 line.SetPosition(1, hit.point);
-                return;
+                yield break;
             }
         }
         line.SetPosition(1, position + (30f * direction));
