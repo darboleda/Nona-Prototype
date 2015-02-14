@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[ExecuteInEditMode]
 public class SharedSprite : MonoBehaviour
 {
 	public SpriteRenderer TargetSprite;
@@ -8,16 +9,12 @@ public class SharedSprite : MonoBehaviour
 	
 	private MaterialPropertyBlock block;
 	
-	void Awake()
-	{
-		block = new MaterialPropertyBlock();
-	}
-
     void OnWillRenderObject()
     {
+		block = block ?? new MaterialPropertyBlock();
         TargetSprite = TargetSprite ?? this.GetComponent<SpriteRenderer>();
         TargetSprite.sprite = SourceSprite.sprite;
-        TargetSprite.material = SourceSprite.material;
+        TargetSprite.sharedMaterial = SourceSprite.sharedMaterial;
         TargetSprite.sortingLayerID = SourceSprite.sortingLayerID;
         TargetSprite.sortingOrder = SourceSprite.sortingOrder;
 

@@ -9,19 +9,19 @@ using UnityEditor;
 public class SetShaderProperties : MonoBehaviour {
 
 	public Color Screen;
+	
+	[Range(-100, 100)]
 	public float Contrast;
+	
+	[Range(-2, 2)]
 	public float Brightness;
 	
 	public SpriteRenderer TargetRenderer;
 	
 	private MaterialPropertyBlock block;
 	
-	public void Awake()
-	{
-		block = new MaterialPropertyBlock();
-	}
-	
 	void OnWillRenderObject () {
+		block = block ?? new MaterialPropertyBlock();
 		TargetRenderer.GetPropertyBlock(block);
 		block.AddColor("_Screen", Screen);
 		block.AddFloat("_Contrast", Contrast);
