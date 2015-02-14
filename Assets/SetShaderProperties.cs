@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[ExecuteInEditMode]
 public class SetShaderProperties : MonoBehaviour {
 
 	public Color Screen;
@@ -16,8 +21,7 @@ public class SetShaderProperties : MonoBehaviour {
 		block = new MaterialPropertyBlock();
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void OnWillRenderObject () {
 		TargetRenderer.GetPropertyBlock(block);
 		block.AddColor("_Screen", Screen);
 		block.AddFloat("_Contrast", Contrast);

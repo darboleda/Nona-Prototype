@@ -12,13 +12,16 @@ public class SharedSprite : MonoBehaviour
 	{
 		block = new MaterialPropertyBlock();
 	}
-	
-	void Update () {
-		TargetSprite = TargetSprite ?? this.GetComponent<SpriteRenderer>();
-		TargetSprite.sprite = SourceSprite.sprite;
-		TargetSprite.material = SourceSprite.material;
-		
-		SourceSprite.GetPropertyBlock(block);
-		TargetSprite.SetPropertyBlock(block);
-	}
+
+    void OnWillRenderObject()
+    {
+        TargetSprite = TargetSprite ?? this.GetComponent<SpriteRenderer>();
+        TargetSprite.sprite = SourceSprite.sprite;
+        TargetSprite.material = SourceSprite.material;
+        TargetSprite.sortingLayerID = SourceSprite.sortingLayerID;
+        TargetSprite.sortingOrder = SourceSprite.sortingOrder;
+
+        SourceSprite.GetPropertyBlock(block);
+        TargetSprite.SetPropertyBlock(block);
+    }
 }
