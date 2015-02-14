@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: MuzzleFlashMaterial
-  m_Shader: {fileID: 10753, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: NonaMaterial
+  m_Shader: {fileID: 4800000, guid: 4723b76c9a104f5418f016f0145c2d21, type: 3}
   m_ShaderKeywords: []
   m_CustomRenderQueue: -1
   m_SavedProperties:
@@ -17,24 +17,24 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 2800000, guid: fd2cbbe84c8133d4bb0cf1893557524b, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
-          name: PixelSnap
-        second: 0
+          name: _Contrast
+        second: -3.57142854
       data:
         first:
-          name: _InvFade
-        second: 1
+          name: _Brightness
+        second: .0357142836
     m_Colors:
       data:
         first:
           name: _Color
-        second: {r: .738843739, g: .242647052, b: 1, a: 1}
+        second: {r: 1, g: 1, b: 1, a: 1}
       data:
         first:
-          name: _TintColor
-        second: {r: .808823526, g: .808823526, b: .808823526, a: .501960814}
+          name: _Screen
+        second: {r: 0, g: 0, b: 0, a: 0}

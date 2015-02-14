@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: MuzzleFlashMaterial
-  m_Shader: {fileID: 10753, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: FogMaterial
+  m_Shader: {fileID: 200, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: []
   m_CustomRenderQueue: -1
   m_SavedProperties:
@@ -23,18 +23,14 @@ Material:
     m_Floats:
       data:
         first:
-          name: PixelSnap
-        second: 0
-      data:
-        first:
           name: _InvFade
-        second: 1
+        second: 1.37374997
     m_Colors:
       data:
         first:
           name: _Color
-        second: {r: .738843739, g: .242647052, b: 1, a: 1}
+        second: {r: 1, g: 1, b: 1, a: 1}
       data:
         first:
           name: _TintColor
-        second: {r: .808823526, g: .808823526, b: .808823526, a: .501960814}
+        second: {r: .16911763, g: .0948156416, b: .0273572598, a: .501960814}
