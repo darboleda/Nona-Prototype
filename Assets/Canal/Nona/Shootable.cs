@@ -2,10 +2,17 @@
 
 public class Shootable : MonoBehaviour
 {
-    public GameObject Effect;
+    public class WallHitFactory : TyplessGameObjectFactory
+    {
+
+    }
+
+    [Zenject.Inject]
+    public WallHitFactory wallHit;
+
     public void TakeShot(RaycastHit hitinfo, NonaController source)
     {
-        GameObject effect = GameObject.Instantiate(Effect) as GameObject;
+        GameObject effect = wallHit.Create();
         effect.transform.position = hitinfo.point;
         effect.transform.LookAt(hitinfo.point + hitinfo.normal);
     }

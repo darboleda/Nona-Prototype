@@ -634,7 +634,6 @@ MonoBehaviour:
   ShotCooldown: .0500000007
   GunSlowdownTime: .100000001
   ReloadTime: .349999994
-  BulletDisplay: {fileID: 0}
 --- !u!114 &11461954
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,8 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using Zenject;
+
 public class NonaController : MonoBehaviour
 {
+    [Inject]
+    public INonaInput<string> Input { get; set; }
+
+    [Inject]
+    public BulletMeter BulletDisplay { get; set; }
+
     public float JumpHeight = 2.5f;
     public float WalkSpeed = 4f;
     public float WalkAcceleration = 10f;
@@ -41,7 +49,6 @@ public class NonaController : MonoBehaviour
 
     private float jumpVelocityOnFire;
 
-    public BulletMeter BulletDisplay;
 
     public void Awake()
     {
@@ -59,7 +66,7 @@ public class NonaController : MonoBehaviour
         Animator.SetBool("Crouching", crouching);
         if (crouching) horizontalAxis = 0;
 
-        if (!crouching && Input.GetButtonDown("Jump") && reloadTimer <= 0)
+        if (!crouching && Input.GetButtonPress("Jump") && reloadTimer <= 0)
         {
             velocity.y = Mathf.Sqrt(2 * Gravity * JumpHeight);
         }
@@ -110,7 +117,7 @@ public class NonaController : MonoBehaviour
             BulletDisplay.StartReload(18, ReloadTime);
             Audio.PlayOneShot(ReloadSound);
         }
-        else if (reloadTimer <= 0 && Input.GetButtonDown("Fire1") || Input.GetButtonUp("Fire1"))
+        else if (reloadTimer <= 0 && Input.GetButtonPress("Fire1") || Input.GetButtonRelease("Fire1"))
         {
             //Audio.PlayOneShot(EmptyGunSound);
         }
