@@ -1,41 +1,67 @@
 ﻿Shader "Custom/Brightness Contrast Unlit Transparent" {
 	Properties {
-		_MainTex ("Base (RGBA)", 2D) = "white" {}
+		[PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
 		_Color ("Color Tint (RGBA)", Color) = (1.0, 1.0, 1.0, 1.0)
 		_Screen ("Screen Tint (RGB)", Color) = (0, 0, 0, 0)
 		_Contrast ("Contrast Factor", Range (-100, 100)) = 0
 		_Brightness ("Brightness Factor", Range (-1, 1)) = 0
+		[MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
 	}
 	SubShader {
-		Tags { "Queue"="Transparent" }
+		Tags
+		{ 
+			"Queue"="Transparent" 
+			"IgnoreProjector"="True" 
+			"RenderType"="Transparent" 
+			"PreviewType"="Plane"
+			"CanUseSpriteAtlas"="True"
+		}
+		
 		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha
-		Cull Back
+		Cull Off
+		Lighting Off
 		
 		CGPROGRAM
-		#pragma surface surf Lambert
+		#pragma surface surf Lambert vertex:vert nofog keepalpha
+		#pragma multi_compile _ PIXELSNAP_ON
 
 		sampler2D _MainTex;
-		half4 _Color;
-		half4 _Screen;
-		half _Contrast;
-		half _Brightness;
+		fixed4 _Color;
+		fixed4 _Screen;
+		fixed _Contrast;
+		fixed _Brightness;
 
 		struct Input {
 			float2 uv_MainTex;
+			fixed4 color;
 		};
-
-		void surf (Input IN, inout SurfaceOutput o) {
-			half4 c = tex2D (_MainTex, IN.uv_MainTex);
-			half cFactor = (100 + _Contrast) * 0.01;
+		
+		void vert (inout appdata_full v, out Input o)
+		{
+			#if defined(PIXELSNAP_ON)
+			v.vertex = UnityPixelSnap (v.vertex);
+			#endif
+		
+			UNITY_INITIALIZE_OUTPUT(Input, o);
+			o.color = v.color;
+		}
+		
+		void surf (Input IN, inout SurfaceOutput o)
+		{
+			fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+			
+			fixed cFactor = (100 + _Contrast) * 0.01;
 			cFactor *= cFactor;
-			o.Albedo = ((c.rgb - 0.5) * cFactor) + 0.5;
-			o.Albedo += _Brightness;
-			o.Albedo = (1 - (1 - o.Albedo) * (1 - _Screen.rgb));
-			o.Albedo *= _Color.rgb * _Color.a;
-			o.Alpha = c.a * _Color.a;
+			
+			o.Albedo.rgb = ((c.rgb - 0.5) * cFactor) + 0.5;
+			o.Albedo.rgb += _Brightness;
+			o.Albedo.rgb = (1 - (1 - o.Albedo.rgb) * (1 - _Screen.rgb));
+			
+			o.Albedo.rgb *= _Color.rgb * IN.color.rgb * c.a;
+			o.Alpha = _Color.a * IN.color.a * c.a;
 		}
 		ENDCG
 	} 
-	FallBack "Diffuse"
+	Fallback "Transparent/VertexLit"
 }
