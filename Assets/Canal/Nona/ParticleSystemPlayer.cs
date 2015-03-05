@@ -17,7 +17,11 @@ public class ParticleSystemPlayer : MonoBehaviour
         foreach (var target in Targets)
         {
             if (target.Key == key)
+            {
+                target.Target.gameObject.SetActive(false);
+                target.Target.gameObject.SetActive(true);
                 target.Target.Play();
+            }
         }
     }
 }

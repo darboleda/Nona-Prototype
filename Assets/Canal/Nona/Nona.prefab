@@ -630,6 +630,7 @@ MonoBehaviour:
   WalkAcceleration: 50
   WalkFriction: 20
   Gravity: 30
+  MaxJumps: 2
   SolidFloorLayer:
     serializedVersion: 2
     m_Bits: 256

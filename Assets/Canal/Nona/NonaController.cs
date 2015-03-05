@@ -17,6 +17,8 @@ public class NonaController : MonoBehaviour
     public float WalkFriction = 10f;
     public float Gravity = 20f;
 
+    public int MaxJumps;
+
     public LayerMask SolidFloorLayer;
     public LayerMask GunShotLayer;
 
@@ -48,6 +50,7 @@ public class NonaController : MonoBehaviour
     private bool facingRight = true;
 
     private float jumpVelocityOnFire;
+    private int currentJumps;
 
 
     public void Awake()
@@ -66,9 +69,19 @@ public class NonaController : MonoBehaviour
         Animator.SetBool("Crouching", crouching);
         if (crouching) horizontalAxis = 0;
 
-        if (!crouching && Input.GetButtonPress("Jump") && reloadTimer <= 0)
+        
+        if (onGround)
+        {
+            currentJumps = MaxJumps;
+        }
+
+        if (!crouching && Input.GetButtonPress("Jump") && reloadTimer <= 0 && currentJumps > 0)
         {
             velocity.y = Mathf.Sqrt(2 * Gravity * JumpHeight);
+            if(!onGround)
+            {
+                currentJumps--;
+            }
         }
 
         if (velocity.y > 0 && !Input.GetButton("Jump"))
@@ -82,7 +95,6 @@ public class NonaController : MonoBehaviour
         if (cooldownTimer > 0)
         {
             cooldownTimer -= Time.deltaTime;
-
         }
 
         gravityMultiplier = 1;
@@ -90,8 +102,7 @@ public class NonaController : MonoBehaviour
         gunSlowdownTimer -= Time.deltaTime;
         if (gunSlowdownTimer > 0)
         {
-            horizontalAxis *= (onGround ? 0.8f : 0.3f);
-            gravityMultiplier = 0.3f;
+            horizontalAxis *= (onGround ? 0.8f : 1f);
         }
 
         if (shotsFired < 18)
@@ -167,14 +178,6 @@ public class NonaController : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
         Vector3 position = origin.position;
         shotsFired++;
-        if (!onGround)
-        {
-            if (velocity.y > 0)
-                velocity.y = 0;
-            else
-                velocity.y *= 0.5f;
-            velocity.x = 3f * (facingRight ? -1 : 1);
-        }
         Audio.PlayOneShot(GunSound, 0.7f);
         Ray ray = new Ray(position, direction);
         RaycastHit hit;
