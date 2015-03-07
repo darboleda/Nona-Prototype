@@ -1,5 +1,20 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &125188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 452052}
+  m_Layer: 0
+  m_Name: Collision Checks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &146650
 GameObject:
   m_ObjectHideFlags: 1
@@ -217,6 +232,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &168458
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 442812}
+  - 114: {fileID: 11471040}
+  m_Layer: 0
+  m_Name: Right Floor Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &189184
 GameObject:
   m_ObjectHideFlags: 1
@@ -251,6 +282,34 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &190640
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 485152}
+  - 114: {fileID: 11411916}
+  m_Layer: 0
+  m_Name: Left Floor Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &442812
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 168458}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: .25, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 452052}
+  m_RootOrder: 1
 --- !u!4 &446650
 Transform:
   m_ObjectHideFlags: 1
@@ -275,6 +334,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 459140}
   m_RootOrder: 1
+--- !u!4 &452052
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 125188}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 485152}
+  - {fileID: 442812}
+  m_Father: {fileID: 459148}
+  m_RootOrder: 2
 --- !u!4 &459136
 Transform:
   m_ObjectHideFlags: 1
@@ -367,6 +440,7 @@ Transform:
   m_Children:
   - {fileID: 459150}
   - {fileID: 22457842}
+  - {fileID: 452052}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &459150
@@ -396,6 +470,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 459140}
   m_RootOrder: 2
+--- !u!4 &485152
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190640}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -.25, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 452052}
+  m_RootOrder: 0
 --- !u!4 &489184
 Transform:
   m_ObjectHideFlags: 1
@@ -506,6 +592,20 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &11411916
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9347b076f982d894fa60c61d17539f56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloorLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &11421618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -631,9 +731,6 @@ MonoBehaviour:
   WalkFriction: 20
   Gravity: 30
   MaxJumps: 2
-  SolidFloorLayer:
-    serializedVersion: 2
-    m_Bits: 256
   GunShotLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -648,6 +745,10 @@ MonoBehaviour:
   ShotCooldown: .0500000007
   GunSlowdownTime: .100000001
   ReloadTime: .349999994
+  floorChecks:
+  - {fileID: 11411916}
+  - {fileID: 11471040}
+  velocity: {x: 0, y: 0}
 --- !u!114 &11461954
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -661,6 +762,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetSprite: {fileID: 21261954}
   SourceSprite: {fileID: 21259136}
+--- !u!114 &11471040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 168458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9347b076f982d894fa60c61d17539f56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FloorLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &11489184
 MonoBehaviour:
   m_ObjectHideFlags: 1

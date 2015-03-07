@@ -19,7 +19,6 @@ public class NonaController : MonoBehaviour
 
     public int MaxJumps;
 
-    public LayerMask SolidFloorLayer;
     public LayerMask GunShotLayer;
 
     public Animator Animator;
@@ -38,9 +37,17 @@ public class NonaController : MonoBehaviour
 
     new private Transform transform;
 
-    private Vector2 velocity;
+    public NonaDeltaLimit[] floorChecks;
+
+    [HideInInspector]
+    public Vector2 velocity;
     private float horizontalAxis;
-    private bool onGround;
+
+    private NonaCollision nonaCollision;
+    private bool onGround 
+    {
+        get { return this.nonaCollision.Grounded; }
+    }
 
     private float cooldownTimer = 0;
     private float gunSlowdownTimer = 0;
@@ -58,6 +65,8 @@ public class NonaController : MonoBehaviour
         this.transform = base.transform;
         Animator.SetBool("Facing Right", true);
         facingRight = true;
+
+        this.nonaCollision = new NonaCollision(new NonaInformation(this));
     }
 
     public void Update()
@@ -237,20 +246,17 @@ public class NonaController : MonoBehaviour
 
     private Vector3 CheckFloor(Vector3 desiredDelta)
     {
-        RaycastHit hit;
-        Ray ray = new Ray(transform.position + desiredDelta - Vector3.down * 0.5f, Vector3.down);
-        Debug.DrawRay(ray.origin, ray.direction, Color.red);
-        if (velocity.y <= 0 && Physics.Raycast(ray, out hit, 1f, SolidFloorLayer))
+        Vector2 updatedDelta = (Vector2)desiredDelta;
+        NonaCollision updatedInfo = new NonaCollision(this.nonaCollision.Nona);
+
+        foreach(NonaDeltaLimit floorCheck in floorChecks)
         {
-            Vector3 finalDelta = hit.point - transform.position;
-            if (finalDelta.y <= 0 && desiredDelta.y <= finalDelta.y || Mathf.Abs(desiredDelta.y - finalDelta.y) < 0.01f)
-            {
-                onGround = true;
-                return finalDelta;
-            }
+            NonaDeltaLimit.ApplicationResult result = floorCheck.Apply(updatedDelta, this.nonaCollision, updatedInfo);
+            updatedDelta = result.updatedDelta;
+            updatedInfo = result.updatedInfo;
         }
-        onGround = false;
-        return desiredDelta;
+        this.nonaCollision = updatedInfo;
+        return (Vector3)updatedDelta;
     }
 
     private float AddAndZeroSignChange(float value, float add)
