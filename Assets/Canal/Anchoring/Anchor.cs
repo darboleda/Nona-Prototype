@@ -17,6 +17,7 @@ public class Anchor : MonoBehaviour {
     public event TransformUpdatedHandler TransformUpdated;
 
     private Transform cachedTransform;
+    private Transform testTransform;
 
     private TransformInfo currentTransform;
     public TransformInfo CurrentTransform
@@ -49,12 +50,12 @@ public class Anchor : MonoBehaviour {
                 transformInfo.position = cachedTransform.localPosition;
                 transformInfo.scale = cachedTransform.localScale;
                 transformInfo.rotation = cachedTransform.localRotation;
-                
+
                 cachedTransform.parent = currentParent;
 
-                currentTransform = transformInfo;
-                if(TransformUpdated != null)
+                if (!currentTransform.Equals(transformInfo) && TransformUpdated != null)
                 {
+                    currentTransform = transformInfo;
                     TransformUpdated(transformInfo);
                 }
             }
