@@ -191,6 +191,7 @@ GameObject:
   - 114: {fileID: 11459138}
   - 114: {fileID: 11459136}
   - 82: {fileID: 8210880}
+  - 114: {fileID: 11413020}
   m_Layer: 0
   m_Name: Nona
   m_TagString: Untagged
@@ -606,6 +607,30 @@ MonoBehaviour:
   FloorLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &11413020
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 159148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e7e3968feba0e14faa89fe1cd5a09e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GunSound: {fileID: 8300000, guid: 99b81e1f888c4a34282da8620814eee4, type: 3}
+  ReloadSound: {fileID: 8300000, guid: aad0472dccad23645bc917b69aaf488c, type: 3}
+  EmptyGunSound: {fileID: 8300000, guid: 2ead2b25bec3b6241925e7f0fb296d80, type: 3}
+  BulletTrail: {fileID: 128768, guid: 660bc9b0db2522340913590f95ed2d0a, type: 2}
+  LeftGunShotOrigin: {fileID: 446650}
+  RightGunShotOrigin: {fileID: 446652}
+  ShotCooldown: .00999999978
+  GunSlowdownTime: .200000003
+  ReloadTime: .5
+  MaxBullets: 18
+  GunShotLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &11421618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -731,24 +756,13 @@ MonoBehaviour:
   WalkFriction: 20
   Gravity: 30
   MaxJumps: 2
-  GunShotLayer:
-    serializedVersion: 2
-    m_Bits: 256
   Animator: {fileID: 9559136}
   Audio: {fileID: 8210880}
-  GunSound: {fileID: 8300000, guid: 99b81e1f888c4a34282da8620814eee4, type: 3}
-  ReloadSound: {fileID: 8300000, guid: aad0472dccad23645bc917b69aaf488c, type: 3}
-  EmptyGunSound: {fileID: 8300000, guid: 2ead2b25bec3b6241925e7f0fb296d80, type: 3}
-  BulletTrail: {fileID: 128768, guid: 660bc9b0db2522340913590f95ed2d0a, type: 2}
-  LeftGunShotOrigin: {fileID: 446650}
-  RightGunShotOrigin: {fileID: 446652}
-  ShotCooldown: .0500000007
-  GunSlowdownTime: .100000001
-  ReloadTime: .349999994
   floorChecks:
   - {fileID: 11411916}
   - {fileID: 11471040}
-  velocity: {x: 0, y: 0}
+  actions: []
+  facingRight: 1
 --- !u!114 &11461954
 MonoBehaviour:
   m_ObjectHideFlags: 1
