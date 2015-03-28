@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 using Zenject;
 
@@ -7,9 +8,6 @@ public class NonaController : MonoBehaviour
 {
     [Inject]
     public INonaInput<string> Input { get; set; }
-
-    [Inject]
-    public BulletMeter BulletDisplay { get; set; }
 
     public float JumpHeight = 2.5f;
     public float WalkSpeed = 4f;
@@ -19,46 +17,37 @@ public class NonaController : MonoBehaviour
 
     public int MaxJumps;
 
-    public LayerMask GunShotLayer;
-
     public Animator Animator;
     public AudioSource Audio;
-
-    public AudioClip GunSound;
-    public AudioClip ReloadSound;
-    public AudioClip EmptyGunSound;
-    public GameObject BulletTrail;
-
-    public Transform LeftGunShotOrigin;
-    public Transform RightGunShotOrigin;
-    public float ShotCooldown = 0.1f;
-    public float GunSlowdownTime = 0.5f;
-    public float ReloadTime = 0.5f;
 
     new private Transform transform;
 
     public NonaDeltaLimit[] floorChecks;
+    public List<ActionBehavior> actions;
 
-    [HideInInspector]
+    [System.NonSerialized]
+    public bool DisableInput;
+
+    [System.NonSerialized]
+    public bool InFocusMode;
+
+    [System.NonSerialized]
     public Vector2 velocity;
-    private float horizontalAxis;
+
+    [System.NonSerialized]
+    public float horizontalAxis;
 
     private NonaCollision nonaCollision;
-    private bool onGround 
+    public bool onGround 
     {
         get { return this.nonaCollision.Grounded; }
     }
 
-    private float cooldownTimer = 0;
-    private float gunSlowdownTimer = 0;
-    private float reloadTimer = 0;
-    private bool lastFiredLeft = false;
     private float gravityMultiplier = 1;
-    private bool facingRight = true;
+    public bool facingRight = true;
 
     private float jumpVelocityOnFire;
     private int currentJumps;
-
 
     public void Awake()
     {
@@ -74,17 +63,26 @@ public class NonaController : MonoBehaviour
         horizontalAxis = Input.GetAxis("Move Horizontal");
         horizontalAxis = (horizontalAxis > 0.5f ? 1 : horizontalAxis < -0.5f ? -1 : 0);
 
-        bool crouching = Input.GetButton("Crouch") && onGround && reloadTimer <= 0;
+        foreach (var action in actions)
+        {
+            action.Tick();
+        }
+
+        bool crouching = Input.GetButton("Crouch") && onGround && !DisableInput;
         Animator.SetBool("Crouching", crouching);
         if (crouching) horizontalAxis = 0;
 
+        if (InFocusMode)
+        {
+            horizontalAxis *= (onGround ? 0.8f : 1f);
+        }
         
         if (onGround)
         {
             currentJumps = MaxJumps;
         }
 
-        if (!crouching && Input.GetButtonPress("Jump") && reloadTimer <= 0 && currentJumps > 0)
+        if (!crouching && Input.GetButtonPress("Jump") && !DisableInput && currentJumps > 0)
         {
             velocity.y = Mathf.Sqrt(2 * Gravity * JumpHeight);
             if(!onGround)
@@ -101,70 +99,18 @@ public class NonaController : MonoBehaviour
         Animator.SetBool("Falling", velocity.y <= 0 && !onGround);
         Animator.SetBool("Jumping", velocity.y > 0);
 
-        if (cooldownTimer > 0)
-        {
-            cooldownTimer -= Time.deltaTime;
-        }
-
         gravityMultiplier = 1;
 
-        gunSlowdownTimer -= Time.deltaTime;
-        if (gunSlowdownTimer > 0)
+        if (DisableInput)
         {
-            horizontalAxis *= (onGround ? 0.8f : 1f);
-        }
-
-        if (shotsFired < 18)
-        {
-            Vector3 facingDirection = (facingRight ? Vector3.right : Vector3.left);
-            if (Input.GetButton("Attack") && !lastFiredLeft && cooldownTimer <= 0)
-            {
-                Animator.SetTrigger("Left Gun Fire");
-                this.StartCoroutine(FireGun(LeftGunShotOrigin, transform.TransformDirection(facingDirection)));
-                lastFiredLeft = true;
-
-            }
-            else if (!Input.GetButton("Attack") && lastFiredLeft && cooldownTimer <= 0)
-            {
-                Animator.SetTrigger("Right Gun Fire");
-                this.StartCoroutine(FireGun(RightGunShotOrigin, transform.TransformDirection(facingDirection)));
-                lastFiredLeft = false;
-            }
-        }
-        else if (onGround && reloadTimer <= 0)
-        {
-            reloadTimer = ReloadTime;
-            BulletDisplay.StartReload(18, ReloadTime);
-            Audio.PlayOneShot(ReloadSound);
-        }
-        else if (reloadTimer <= 0 && Input.GetButtonPress("Attack") || Input.GetButtonRelease("Attack"))
-        {
-            //Audio.PlayOneShot(EmptyGunSound);
-        }
-
-        if (reloadTimer > 0 && onGround)
-        {
-            Animator.SetBool("Reloading", true);
-            reloadTimer -= Time.deltaTime;
-            if (reloadTimer <= 0)
-            {
-                shotsFired = 0;
-                Animator.SetBool("Reloading", false);
-            }
             horizontalAxis = 0;
         }
-        else if (reloadTimer > 0 && !onGround)
-        {
-            Animator.SetBool("Reloading", false);
-            reloadTimer = ReloadTime;
-        }
-
-        if (horizontalAxis > 0 && gunSlowdownTimer <= 0)
+        if (horizontalAxis > 0 && !InFocusMode)
         {
             Animator.SetBool("Facing Right", true);
             facingRight = true;
         }
-        else if (horizontalAxis < 0 && gunSlowdownTimer <= 0)
+        else if (horizontalAxis < 0 && !InFocusMode)
         {
             Animator.SetBool("Facing Right", false);
             facingRight = false;
@@ -172,40 +118,6 @@ public class NonaController : MonoBehaviour
 
         Animator.SetFloat("Horizontal Speed", horizontalAxis);
 
-        if (reloadTimer <= 0)
-        {
-            BulletDisplay.SetBulletCount(18 - shotsFired, 18);
-        }
-    }
-
-    private int shotsFired;
-
-    private IEnumerator FireGun(Transform origin, Vector3 direction)
-    {
-        cooldownTimer = ShotCooldown;
-        gunSlowdownTimer = GunSlowdownTime;
-        yield return new WaitForSeconds(0.01f);
-        Vector3 position = origin.position;
-        shotsFired++;
-        Audio.PlayOneShot(GunSound, 0.7f);
-        Ray ray = new Ray(position, direction);
-        RaycastHit hit;
-        LineRenderer line = (GameObject.Instantiate(BulletTrail) as GameObject).GetComponent<LineRenderer>();
-        line.SetVertexCount(2);
-        line.SetPosition(0, position);
-        line.useWorldSpace = true;
-        if (Physics.Raycast(ray, out hit, 30f, GunShotLayer))
-        {
-            Component h = (Component)(hit.rigidbody) ?? (Component)(hit.collider);
-            Shootable s = h.GetComponent<Shootable>();
-            if (s != null)
-            {
-                s.TakeShot(hit, this);
-                line.SetPosition(1, hit.point);
-                yield break;
-            }
-        }
-        line.SetPosition(1, position + (30f * direction));
     }
 
     public void FixedUpdate()

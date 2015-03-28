@@ -10,7 +10,7 @@ public class Shootable : MonoBehaviour
     [Zenject.Inject]
     public WallHitFactory wallHit;
 
-    public void TakeShot(RaycastHit hitinfo, NonaController source)
+    public void TakeShot(RaycastHit hitinfo, TwinGunFire source)
     {
         GameObject effect = wallHit.Create();
         effect.transform.position = hitinfo.point;
