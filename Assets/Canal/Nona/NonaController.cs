@@ -71,10 +71,10 @@ public class NonaController : MonoBehaviour
 
     public void Update()
     {
-        horizontalAxis = Input.GetAxisRaw("Horizontal");
+        horizontalAxis = Input.GetAxis("Move Horizontal");
         horizontalAxis = (horizontalAxis > 0.5f ? 1 : horizontalAxis < -0.5f ? -1 : 0);
 
-        bool crouching = Input.GetAxisRaw("Vertical") < -0.5f && onGround && reloadTimer <= 0;
+        bool crouching = Input.GetButton("Crouch") && onGround && reloadTimer <= 0;
         Animator.SetBool("Crouching", crouching);
         if (crouching) horizontalAxis = 0;
 
@@ -117,14 +117,14 @@ public class NonaController : MonoBehaviour
         if (shotsFired < 18)
         {
             Vector3 facingDirection = (facingRight ? Vector3.right : Vector3.left);
-            if (Input.GetButton("Fire1") && !lastFiredLeft && cooldownTimer <= 0)
+            if (Input.GetButton("Attack") && !lastFiredLeft && cooldownTimer <= 0)
             {
                 Animator.SetTrigger("Left Gun Fire");
                 this.StartCoroutine(FireGun(LeftGunShotOrigin, transform.TransformDirection(facingDirection)));
                 lastFiredLeft = true;
 
             }
-            else if (!Input.GetButton("Fire1") && lastFiredLeft && cooldownTimer <= 0)
+            else if (!Input.GetButton("Attack") && lastFiredLeft && cooldownTimer <= 0)
             {
                 Animator.SetTrigger("Right Gun Fire");
                 this.StartCoroutine(FireGun(RightGunShotOrigin, transform.TransformDirection(facingDirection)));
@@ -137,7 +137,7 @@ public class NonaController : MonoBehaviour
             BulletDisplay.StartReload(18, ReloadTime);
             Audio.PlayOneShot(ReloadSound);
         }
-        else if (reloadTimer <= 0 && Input.GetButtonPress("Fire1") || Input.GetButtonRelease("Fire1"))
+        else if (reloadTimer <= 0 && Input.GetButtonPress("Attack") || Input.GetButtonRelease("Attack"))
         {
             //Audio.PlayOneShot(EmptyGunSound);
         }

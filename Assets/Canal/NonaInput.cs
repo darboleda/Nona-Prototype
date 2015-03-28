@@ -2,14 +2,13 @@
 using System.Collections;
 
 using Zenject;
+using Rewired;
 
 public interface INonaInput<T>
 {
     float GetAxis(T axisId);
-    float GetAxisRaw(T axisId);
 
     Vector2 GetAxes(T horizontalAxisId, T verticalAxisId, bool reverseHorizontal = false, bool reverseVertical = false);
-    Vector2 GetAxesRaw(T horizontalAxisId, T verticalAxisId, bool reverseHorizontal = false, bool reverseVertical = false);
 
     bool GetButtonPress(T buttonId);
     bool GetButtonRelease(T buttonId);
@@ -18,14 +17,15 @@ public interface INonaInput<T>
 
 public class NonaInput : INonaInput<string>
 {
-    public float GetAxis(string axisName)
+    private Player player;
+    public NonaInput()
     {
-        return Input.GetAxis(axisName);
+        player = ReInput.players.GetPlayer(0);
     }
 
-    public float GetAxisRaw(string axisName)
+    public float GetAxis(string axisName)
     {
-        return Input.GetAxisRaw(axisName);
+        return player.GetAxisRaw(GetId(axisName));
     }
 
     public Vector2 GetAxes(string horizontalAxisId, string verticalAxisId, bool reverseHorizontal = false, bool reverseVertical = false)
@@ -38,26 +38,22 @@ public class NonaInput : INonaInput<string>
             (reverseVertical ? -verticalAxis : verticalAxis)
         );
     }
-    public Vector2 GetAxesRaw(string horizontalAxisId, string verticalAxisId, bool reverseHorizontal = false, bool reverseVertical = false)
-    {
-        float horizontalAxis = GetAxisRaw(horizontalAxisId);
-        float verticalAxis = GetAxisRaw(verticalAxisId);
 
-        return new Vector2(
-            (reverseHorizontal ? -horizontalAxis : horizontalAxis),
-            (reverseVertical ? -verticalAxis : verticalAxis)
-        );
-    }
     public bool GetButtonPress(string buttonId)
     {
-        return Input.GetButtonDown(buttonId);
+        return player.GetButtonDown(GetId(buttonId));
     }
     public bool GetButtonRelease(string buttonId)
     {
-        return Input.GetButtonUp(buttonId);
+        return player.GetButtonUp(GetId(buttonId));
     }
     public bool GetButton(string buttonId)
     {
-        return Input.GetButton(buttonId);
+        return player.GetButton(GetId(buttonId));
+    }
+
+    private int GetId(string name)
+    {
+        return ReInput.mapping.GetActionId(name);
     }
 }
