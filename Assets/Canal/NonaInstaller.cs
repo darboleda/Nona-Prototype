@@ -7,7 +7,7 @@ public class TyplessGameObjectFactory : GameObjectFactory, IFactory<GameObject>
 {
     public virtual GameObject Create()
     {
-        return _instantiator.Instantiate(_prefab);
+        return _container.InstantiatePrefab(_prefab);
     }
 
     public override IEnumerable<ZenjectResolveException> Validate()
@@ -42,7 +42,7 @@ public class NonaInstaller : MonoInstaller
         Container.Bind<ITickable>().ToSingle<Ticker>();
 
         Container.Bind<INonaInput<string>>().ToSingle<NonaInput>();
-        Container.Bind<BulletMeter>().ToSingle<BulletMeter>(bulletMeter);
+        Container.Bind<BulletMeter>().ToSingleInstance(bulletMeter);
         Container.BindGameObjectFactory<Shootable.WallHitFactory>(wallHitPrefab);
     }
 
